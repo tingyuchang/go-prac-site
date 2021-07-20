@@ -1,10 +1,12 @@
 package main
 
-import "net/http"
+import (
+	"20210703/internal/router"
+	"net/http"
+)
 
 func main() {
-	mux := http.NewServeMux()
-	err := http.ListenAndServe(":8080", mux)
+	err := http.ListenAndServe(":8080", router.NewRouter())
 	if err != nil {
 		panic(err)
 	}
