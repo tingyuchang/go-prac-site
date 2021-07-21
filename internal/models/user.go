@@ -1,22 +1,28 @@
 package models
 
 import (
-	"go-prac-site/internal/types"
 	"encoding/json"
 	"fmt"
 	"github.com/go-playground/validator/v10"
+	"go-prac-site/internal/types"
+	"gorm.io/gorm"
+	"time"
 )
 
 type User struct {
-	Id string 					`json:"uid" db:"id"`
-	Name string 				`json:"username" db:"name" validate:"required"`
-	Password string 			`json:"-" db:"password" `
-	Email string 				`json:"email" db:"email" validate:"required,email"`
-	Phone string 				`json:"phone" db:"phone"`
-	Gender string 				`json:"gender" db:"gender"`
-	Birthday types.NullTime  	`json:"birthday" db:"birthday"`
-	Regist_at types.NullTime 	`json:"register_at" db:"regist_at"`
-	LastLogin types.NullTime 	`json:"last_login_at" db:"last_login_at"`
+	gorm.Model
+	Id string 					`json:"uid" gorm:"column:id;autoIncrement"`
+	Name string 				`json:"username" gorm:"column:name" validate:"required"`
+	Password string 			`json:"-" gorm:"column:password" `
+	Email string 				`json:"email" gorm:"column:email" validate:"required,email"`
+	Phone string 				`json:"phone" gorm:"column:phone"`
+	Gender string 				`json:"gender" gorm:"column:gender"`
+	Birthday types.NullTime  	`json:"birthday" gorm:"column:birthday"`
+	Regist_at time.Time 		`json:"register_at" gorm:"column:regist_at"`
+	LastLogin types.NullTime	`json:"last_login_at" gorm:"column:last_login_at"`
+	CreatedAt time.Time			`json:"-"`
+	UpdatedAt time.Time			`json:"-"`
+	DeletedAt gorm.DeletedAt 	`json:"-" gorm:"index"`
 }
 
 func (u User) ToMapData() map[string]interface{} {
@@ -61,4 +67,8 @@ func (u *User) checkExistUser() error {
 	}
 
 	return nil
+}
+
+func (u *User) TableName() string {
+	return "user"
 }
