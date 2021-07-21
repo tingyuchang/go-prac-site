@@ -1,7 +1,7 @@
 package router
 
 import (
-	"20210703/internal/models"
+	"go-prac-site/internal/models"
 	"crypto/md5"
 	"encoding/json"
 	"fmt"

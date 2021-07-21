@@ -1,7 +1,7 @@
 package models
 
 import (
-	"20210703/internal/types"
+	"go-prac-site/internal/types"
 	"encoding/json"
 	"fmt"
 	"github.com/go-playground/validator/v10"

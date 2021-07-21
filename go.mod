@@ -1,4 +1,4 @@
-module 20210703
+module go-prac-site
 
 go 1.16
 

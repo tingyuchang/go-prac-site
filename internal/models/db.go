@@ -1,7 +1,7 @@
 package models
 
 import (
-	"20210703/internal/types"
+	"go-prac-site/internal/types"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"

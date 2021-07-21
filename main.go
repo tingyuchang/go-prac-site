@@ -1,7 +1,7 @@
 package main
 
 import (
-	"20210703/internal/router"
+	"go-prac-site/internal/router"
 	"net/http"
 )
 
