@@ -1,9 +1,10 @@
 package models
 
 import (
-	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/spf13/viper"
+	"go-prac-site/e"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -16,15 +17,11 @@ type DBManager struct {
 	Db *gorm.DB
 }
 
-var db_username = "root"
-var db_password = "bieH2leabo1eekaehai5Ahch5eishahj"
-var db_dbname = "cart"
-
 var dbManager *DBManager = &DBManager{}
 
 func (dbm *DBManager) lazyInit() {
 	dbm.once.Do(func() {
-		dsn := fmt.Sprintf("%v:%v@/%v?charset=utf8mb4&parseTime=True", db_username, db_password, db_dbname)
+		dsn := fmt.Sprintf("%v:%v@/%v?charset=utf8mb4&parseTime=True", viper.Get("db.username"), viper.Get("db.password"), viper.Get("db.database"))
 		dbm.Db,_ = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 		//TODO error handling
@@ -42,7 +39,7 @@ func CompareUserAndPassword(username, password string) error {
 	}
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
-		return fmt.Errorf("invalid Password")
+		return fmt.Errorf(e.GetErrorMsg(e.ERROR_AUTH_INVALID_PASSWORD))
 	}
 	return nil
 }
@@ -75,22 +72,16 @@ func CreateUser(user User) (User, error)  {
 	if err := user.validate(); err != nil {
 		return User{}, err
 	}
-
 	if err := user.checkExistUser(); err != nil {
 		return User{}, err
 	}
 
-	db, err := sql.Open("mysql", fmt.Sprintf("%v:%v@/%v", db_username, db_password, db_dbname))
-	if err != nil {
-		return User{}, err
-	}
-	defer db.Close()
 	user.Regist_at = time.Now()
 	bpw,_ := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
 	user.Password = string(bpw)
 	result := dbManager.Db.Create(&user)
 	if result.Error != nil {
-		return User{}, err
+		return User{}, result.Error
 	}
 
 	fmt.Println("created: ", user)

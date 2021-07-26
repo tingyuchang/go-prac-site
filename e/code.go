@@ -1,0 +1,8 @@
+package e
+
+const (
+	ERROR							=  000001
+	ERROR_AUTH 						=  100001
+	ERROR_AUTH_PARSEFORM        	=  100002
+	ERROR_AUTH_INVALID_PASSWORD 	=  100003
+)

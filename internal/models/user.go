@@ -3,11 +3,19 @@ package models
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/go-playground/validator/v10"
 	"go-prac-site/internal/types"
 	"gorm.io/gorm"
 	"time"
 )
+
+type Claims struct {
+	jwt.StandardClaims
+	Username string `json:"username"`
+	Password string `json:"password"`
+
+}
 
 type User struct {
 	gorm.Model
