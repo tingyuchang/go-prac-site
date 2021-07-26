@@ -1,8 +1,6 @@
 package router
 
 import (
-	"crypto/md5"
-	"encoding/json"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"github.com/urfave/negroni"
@@ -11,14 +9,13 @@ import (
 	"go-prac-site/internal/models"
 	"go-prac-site/internal/services"
 	"net/http"
-	"time"
 )
 
 var router *httprouter.Router
 
 func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	r.BasicAuth()
-	defaultResponse(w, map[string]interface{}{
+	models.DefaultResponse(w, map[string]interface{}{
 		"msg": "success",
 	})
 }
@@ -26,7 +23,7 @@ func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 func CreateUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	err := r.ParseForm()
 	if err != nil {
-		ResponseError(w, r, err)
+		models.ResponseError(w, r, err)
 		return
 	}
 	username := r.Form.Get("username")
@@ -46,10 +43,10 @@ func CreateUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	user, err = models.CreateUser(user)
 
 	if err != nil {
-		ResponseError(w, r, err)
+		models.ResponseError(w, r, err)
 		return
 	}
-	defaultResponse(w, user.ToMapData())
+	models.DefaultResponse(w, user.ToMapData())
 }
 
 func Login(w http.ResponseWriter, r *http.Request, _ httprouter.Params)  {
@@ -58,7 +55,7 @@ func Login(w http.ResponseWriter, r *http.Request, _ httprouter.Params)  {
 		// ERROR_AUTH_PARSEFORM
 		// save error to log system
 		// transfer to ERROR_CODE
-		ResponseError(w, r, fmt.Errorf(e.GetErrorMsg(e.ERROR_AUTH_PARSEFORM)))
+		models.ResponseError(w, r, fmt.Errorf(e.GetErrorMsg(e.ERROR_AUTH_PARSEFORM)))
 		return
 	}
 	username := r.Form.Get("username")
@@ -67,19 +64,23 @@ func Login(w http.ResponseWriter, r *http.Request, _ httprouter.Params)  {
 	user, err := models.Login(username, password)
 
 	if err != nil {
-		ResponseError(w, r, err)
+		models.ResponseError(w, r, err)
 		return
 	}
 
 	tokenStr, err := services.CreateTokenString(username, password)
 	if err != nil {
-		ResponseError(w, r, fmt.Errorf(e.GetErrorMsg(e.ERROR_AUTH)))
+		models.ResponseError(w, r, fmt.Errorf(e.GetErrorMsg(e.ERROR_AUTH)))
 		return
 	}
 	responseData := user.ToMapData()
 	responseData["token"] = tokenStr
 
-	defaultResponse(w, responseData)
+	models.DefaultResponse(w, responseData)
+}
+
+func GetUserInfomation(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	fmt.Fprintf(w, "Get user info")
 }
 
 func NewRouter() *httprouter.Router {
@@ -103,27 +104,7 @@ func NewNegroni() *negroni.Negroni {
 	return n
 }
 
-func GetUserInfomation(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	fmt.Fprintf(w, "Get user info")
-}
 
-func ResponseError(w http.ResponseWriter, r *http.Request, err error) {
-	data := make(map[string]interface{})
-	data["fail"] = err.Error()
-	defaultResponse(w, data)
-}
 
-func defaultResponse(w http.ResponseWriter, data map[string]interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	md5Data,_ := json.Marshal(data)
-	id := fmt.Sprintf("%x", md5.Sum(md5Data))
-	response := models.Response{
-		Id: id,
-		Data: data,
-		Datetime: time.Now().Unix(),
-	}
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
-}
 
 
