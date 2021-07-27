@@ -9,10 +9,8 @@ import (
 	"time"
 )
 
-func ReturnError(w http.ResponseWriter, r *http.Request, err error) {
-	data := make(map[string]interface{})
-	data["fail"] = err.Error()
-	DefaultResponse(w, data)
+func ReturnError(w http.ResponseWriter, r *http.Request, err models.ResponseError) {
+	DefaultResponse(w, err.ToMapData())
 }
 
 func DefaultResponse(w http.ResponseWriter, data map[string]interface{}) {

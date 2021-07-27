@@ -16,7 +16,12 @@ func Auth(w http.ResponseWriter, r *http.Request, _ httprouter.Params)  {
 		// ERROR_AUTH_PARSEFORM
 		// save error to log system
 		// transfer to ERROR_CODE
-		response.ReturnError(w, r, fmt.Errorf(e.GetErrorMsg(e.ERROR_AUTH_PARSEFORM)))
+		response.ReturnError(w, r, models.ResponseError{
+			Err: fmt.Errorf("authorization not found"),
+			Code: e.ERROR_AUTH_PARSEFORM,
+			Desc: e.GetErrorMsg(e.ERROR_AUTH_PARSEFORM),
+
+		})
 		return
 	}
 	username := r.Form.Get("username")
@@ -25,13 +30,23 @@ func Auth(w http.ResponseWriter, r *http.Request, _ httprouter.Params)  {
 	user, err := models.Login(username, password)
 
 	if err != nil {
-		response.ReturnError(w, r, err)
+		response.ReturnError(w, r, models.ResponseError{
+			Err: fmt.Errorf("invalid password"),
+			Code: e.ERROR_AUTH_INVALID_PASSWORD,
+			Desc: e.GetErrorMsg(e.ERROR_AUTH_INVALID_PASSWORD),
+
+		})
 		return
 	}
 
 	tokenStr, err := services.CreateTokenString(username, password)
 	if err != nil {
-		response.ReturnError(w, r, fmt.Errorf(e.GetErrorMsg(e.ERROR_AUTH)))
+		response.ReturnError(w, r, models.ResponseError{
+			Err: fmt.Errorf("create token failed"),
+			Code: e.ERROR_AUTH,
+			Desc: e.GetErrorMsg(e.ERROR_AUTH),
+
+		})
 		return
 	}
 	responseData := user.ToMapData()

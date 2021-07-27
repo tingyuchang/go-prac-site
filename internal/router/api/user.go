@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/julienschmidt/httprouter"
+	"go-prac-site/e"
 	"go-prac-site/internal/models"
 	"go-prac-site/internal/router/response"
 	"net/http"
@@ -10,7 +11,12 @@ import (
 func CreateUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	err := r.ParseForm()
 	if err != nil {
-		response.ReturnError(w, r, err)
+		response.ReturnError(w, r, models.ResponseError{
+			Err: err,
+			Code: e.ERROR_USER,
+			Desc: e.GetErrorMsg(e.ERROR_USER),
+
+		})
 		return
 	}
 	username := r.Form.Get("username")
@@ -30,7 +36,12 @@ func CreateUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	user, err = models.CreateUser(user)
 
 	if err != nil {
-		response.ReturnError(w, r, err)
+		response.ReturnError(w, r, models.ResponseError{
+			Err: err,
+			Code: e.ERROR_USER_CREATE,
+			Desc: e.GetErrorMsg(e.ERROR_USER_CREATE),
+
+		})
 		return
 	}
 	response.DefaultResponse(w, user.ToMapData())
@@ -50,7 +61,12 @@ func GetUserInfomation(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 	}
 
 	if err != nil {
-		response.ReturnError(w, r, err)
+		response.ReturnError(w, r, models.ResponseError{
+			Err: err,
+			Code: e.ERROR_USER_NOT_FOUND,
+			Desc: e.GetErrorMsg(e.ERROR_USER_NOT_FOUND),
+
+		})
 		return
 	}
 
