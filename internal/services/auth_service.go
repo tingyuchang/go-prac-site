@@ -23,29 +23,29 @@ func CreateTokenString(username, password string)(string, error) {
 	return token.SignedString([]byte("token_password"))
 }
 
-func Check(username, tokenString string)error {
+func Check(tokenString string)(*models.Claims, error)  {
 	tokenClaims,err := jwt.ParseWithClaims(tokenString, &models.Claims{}, func(token*jwt.Token) (interface{}, error) {
 		return []byte("token_password"), nil
 	})
 
 	if err != nil {
-		return err
+		return &models.Claims{}, err
 	}
 
 	if tokenClaims == nil {
-		return fmt.Errorf("tokenClaims is nil")
+		return &models.Claims{}, fmt.Errorf("tokenClaims is nil")
 	}
 
 	claims, ok := tokenClaims.Claims.(*models.Claims)
 
 	if ok == false || tokenClaims.Valid == false {
-		return fmt.Errorf("tokenClaims is invalid")
+		return &models.Claims{}, fmt.Errorf("tokenClaims is invalid")
 	}
 
-	// check claim: username & expiredAt
-	if claims.Username != username || time.Now().Unix() > claims.ExpiresAt {
-		return fmt.Errorf("usrname is invalid or expired")
+	// check claim: expiredAt
+	if time.Now().Unix() > claims.ExpiresAt {
+		return &models.Claims{}, fmt.Errorf("username is invalid or expired")
 	}
 
-	return nil
+	return claims, nil
 }

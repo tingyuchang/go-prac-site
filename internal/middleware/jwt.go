@@ -3,7 +3,7 @@ package middleware
 import (
 	"fmt"
 	"github.com/julienschmidt/httprouter"
-	"go-prac-site/internal/models"
+	"go-prac-site/internal/router/response"
 	"go-prac-site/internal/services"
 	"net/http"
 	"strings"
@@ -11,22 +11,25 @@ import (
 
 func JWT(next httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		username := ps.ByName("username")
 		authorizations := strings.Split(r.Header.Get("Authorization"), " ")
 
 		if len(authorizations) != 2 {
-			models.ResponseError(w, r, fmt.Errorf("authorization not found"))
+			response.ReturnError(w, r, fmt.Errorf("authorization not found"))
 			return
 		}
 
 		tokenStr := strings.Split(r.Header.Get("Authorization"), " ")[1]
-
-		err := services.Check(username, tokenStr)
+		claim, err := services.Check(tokenStr)
 
 		if err != nil {
-			models.ResponseError(w, r, err)
+			response.ReturnError(w, r, err)
 			return
 		}
+
+		ps = append(ps, httprouter.Param{
+			Key: "username",
+			Value: claim.Username,
+		})
 		next(w,r,ps)
 	}
 }

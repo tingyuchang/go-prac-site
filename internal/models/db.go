@@ -65,7 +65,6 @@ func GetUserByUserName(username string) (User, error) {
 	}
 	return user, nil
 }
-
 // CreateUser validate imported user data and store to db, return user with uid
 func CreateUser(user User) (User, error)  {
 	dbManager.lazyInit()
@@ -88,7 +87,6 @@ func CreateUser(user User) (User, error)  {
 	return user, nil
 
 }
-
 func UpdateUserLastLoginTime(user User) error {
 	dbManager.lazyInit()
 
