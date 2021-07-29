@@ -31,7 +31,7 @@ func NewNegroni() *negroni.Negroni {
 	router = httprouter.New()
 	router.GET("/", Index)
 	router.POST("/user", api.CreateUser)
-	router.POST("/login", api.Auth)
+	router.POST("/auth", api.Auth)
 	router.GET("/user/:uid", middleware.JWT(api.GetUserInfomation))
 	n := negroni.Classic()
 	n.UseHandler(router)

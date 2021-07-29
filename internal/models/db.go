@@ -23,6 +23,7 @@ func (dbm *DBManager) lazyInit() {
 	dbm.once.Do(func() {
 		dsn := fmt.Sprintf("%v:%v@/%v?charset=utf8mb4&parseTime=True", viper.Get("db.username"), viper.Get("db.password"), viper.Get("db.database"))
 		dbm.Db,_ = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+		dbm.Db.AutoMigrate(&User{})
 
 		//TODO error handling
 	})
@@ -75,7 +76,7 @@ func CreateUser(user User) (User, error)  {
 		return User{}, err
 	}
 
-	user.Regist_at = time.Now()
+	user.RegisterAt = time.Now()
 	bpw,_ := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
 	user.Password = string(bpw)
 	result := dbManager.Db.Create(&user)

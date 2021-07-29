@@ -19,18 +19,18 @@ type Claims struct {
 
 type User struct {
 	gorm.Model
-	Id string 					`json:"uid" gorm:"column:id;autoIncrement"`
-	Name string 				`json:"username" gorm:"column:name" validate:"required"`
-	Password string 			`json:"-" gorm:"column:password" `
-	Email string 				`json:"email" gorm:"column:email" validate:"required,email"`
-	Phone string 				`json:"phone" gorm:"column:phone"`
-	Gender string 				`json:"gender" gorm:"column:gender"`
-	Birthday types.NullTime  	`json:"birthday" gorm:"column:birthday"`
-	Regist_at time.Time 		`json:"register_at" gorm:"column:regist_at"`
-	LastLogin types.NullTime	`json:"last_login_at" gorm:"column:last_login_at"`
-	CreatedAt time.Time			`json:"-"`
-	UpdatedAt time.Time			`json:"-"`
-	DeletedAt gorm.DeletedAt 	`json:"-" gorm:"index"`
+	Id         string         `json:"uid" gorm:"column:id;autoIncrement"`
+	Name       string         `json:"username" gorm:"column:name" validate:"required"`
+	Password   string         `json:"-" gorm:"column:password" `
+	Email      string         `json:"email" gorm:"column:email" validate:"required,email"`
+	Phone      string         `json:"phone" gorm:"column:phone"`
+	Gender     string         `json:"gender" gorm:"column:gender"`
+	Birthday   types.NullTime `json:"birthday" gorm:"column:birthday"`
+	RegisterAt time.Time      `json:"register_at" gorm:"column:register_at"`
+	LastLogin  types.NullTime `json:"last_login_at" gorm:"column:last_login_at"`
+	CreatedAt  time.Time      `json:"-"`
+	UpdatedAt  time.Time      `json:"-"`
+	DeletedAt  gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
 func (u User) ToMapData() map[string]interface{} {
